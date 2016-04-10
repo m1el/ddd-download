@@ -5,9 +5,6 @@ Comment = bs4.Comment
 Text = bs4.NavigableString
 Tag = bs4.Tag
 
-def _parser(string):
-  return bs4.BeautifulSoup(string, 'html5lib')
-
 EMPTY_TAGS = set(['img'])
 
 def split_by(arr, pred):

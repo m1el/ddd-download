@@ -158,9 +158,9 @@ def get_expanding(post):
     return d.select('div.alt2 div')[0]
   return None
 
-for i, (p, t) in enumerate(posts):
+for p, t in posts:
   doc, post = get_post(p)
-  if i == 0:
+  if p == START:
     while not is_img(post.contents[0]):
       post.contents[0].extract()
 
