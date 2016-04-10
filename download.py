@@ -132,7 +132,8 @@ IMG_MAP = {
     'http://i.imgur.com/Z4J2G6W.png': 'Z4J2G6W.png',
     'http://i.imgur.com/GtTPlF9.png': 'GtTPlF9.png',
     'http://i.imgur.com/aqD6kkB.png': 'aqD6kkB.png',
-    'http://i.imgur.com/PJXrAtR.png': 'PJXrAtR.png', # ded link
+    'http://i.imgur.com/PJXrAtR.png': 'ishizue_kanata.jpg',
+    'http://i.imgur.com/rHdDqSh.png': 'ishizue_kanata.jpg',
     'http://i.imgur.com/qFuMOgW.png': 'qFuMOgW.png',
     'http://forums.nrvnqsr.com/attachment.php?attachmentid=11346&d=1446157668&thumb=1': 'DDD0007_s.png',
     }
