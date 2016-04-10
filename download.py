@@ -173,9 +173,16 @@ for p, t in posts:
   body.append(wrap(template, 'section', pars))
   body.append('\n')
 
-br.replace_text(body, r'^-- ', '— ')
-br.replace_text(body, r'\x85', '…')
-br.replace_text(body, r'\x97', '—')
+def fix_text(el):
+  if type(el) != br.Text:
+    return
+  text = str(el)
+  text = re.sub(r'^-- ', '— ', text)
+  text = re.sub(r'\x85', '…', text)
+  text = re.sub(r'\x97', '—', text)
+  el.replace_with(text)
+
+br.walk(body, fix_text)
 br.fb2_tags(body)
 
 for p in body.select('p'):

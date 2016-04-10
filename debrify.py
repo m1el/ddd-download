@@ -79,6 +79,12 @@ def tag_strip_side(element, right=False):
         tag.extract()
   return False
 
+def walk(root, fn):
+  fn(root)
+  if type(root) == Tag:
+    for el in root.contents:
+      walk(el, fn)
+
 def replace_text(el, rx, rep):
   for tag in el.contents:
     if type(tag) == Text:
