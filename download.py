@@ -163,6 +163,7 @@ br.fb2_tags(body)
 
 for img in body.select('img'):
   src = img.attrs.get('src', None)
+  root = template.contents[0]
   if src in IMG_MAP:
     src = IMG_MAP[src]
     img.name = 'image'
@@ -174,7 +175,8 @@ for img in body.select('img'):
     blob.attrs['content-type'] = IMG_TYPE[src[-3:]]
     with open('img/' + src, 'rb') as f:
       blob.append(base64.b64encode(f.read()).decode())
-    template.contents[0].append(blob)
+    root.append(blob)
+    root.append('\n')
 
 with open('ddd.fb2', 'w', encoding='utf-8') as out:
   out.write(str(template))
