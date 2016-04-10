@@ -54,6 +54,18 @@ def is_el_gen(name):
 is_div = is_el_gen('div')
 is_img = is_el_gen('img')
 is_li = is_el_gen('li')
+is_empty = is_el_gen('empty-line')
+
+def drop_empty(els, limit=2):
+  count = 0
+  for el in els:
+    if is_empty(el):
+      count += 1
+      if count > limit:
+        continue
+    else:
+      count = 0
+    yield el
 
 def wrap(doc, name, ary):
   ret = doc.new_tag(name)
@@ -80,12 +92,14 @@ def post_ps(doc, post):
         name = 'section'
       if len(g.contents) > 1:
         els = map(strip, br.paragrify(doc, g))
+        els = drop_empty(els)
         els = br.intersperse(els, '\n')
       else:
         els = [g.contents[0]]
       yield wrap(doc, name, list(els))
     else:
       els = map(strip, br.paragrify(doc, wrap(doc, post.name, g)))
+      els = drop_empty(els)
       yield from br.intersperse(els, '\n')
     yield '\n'
 
