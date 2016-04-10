@@ -2,6 +2,7 @@ import hashlib
 import debrify as br
 import bs4
 import requests
+import base64
 
 session = requests.session()
 def _parser(string):
@@ -98,6 +99,32 @@ THREAD = 'http://forums.nrvnqsr.com/showthread.php/2637-DDD'
 POST_URL = (THREAD + '?p={0}').format
 POST_SEL = '#post_message_{0}'.format
 START = '900226'
+IMG_MAP = {
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/ddd0105_s.jpg': 'ddd0105_s.png',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/side_a024.jpg': 'side_a024.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/dddp1.png': 'side_a026-a027.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/dddp2.png': 'dddp2.png',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/ddddd.png': 'side_b027.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/Faust03_351.jpg': 'Faust03_351.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/ddd0173_s.jpg': 'ddd0173_s.png',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/side_b020.jpg': 'side_b020.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/handL2.jpg': 'handL2.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/ddd3.png': 'side_b053.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/ddd4.png': '1062816_p0.jpg',
+    'http://i943.photobucket.com/albums/ad275/AITDerceto/ddd5.png': 'ddd5.jpg',
+    'http://i.imgur.com/YKCtchr.png': 'side_b089.jpg',
+    'http://i.imgur.com/KbQUdSZ.jpg': 'KbQUdSZ.jpg',
+    'http://i.imgur.com/Z4J2G6W.png': 'Z4J2G6W.png',
+    'http://i.imgur.com/GtTPlF9.png': 'GtTPlF9.png',
+    'http://i.imgur.com/aqD6kkB.png': 'aqD6kkB.png',
+    'http://i.imgur.com/PJXrAtR.png': 'PJXrAtR.png', # ded link
+    'http://i.imgur.com/qFuMOgW.png': 'qFuMOgW.png',
+    'http://forums.nrvnqsr.com/attachment.php?attachmentid=11346&d=1446157668&thumb=1': 'DDD0007_s.png',
+    }
+IMG_TYPE = {
+    'png': 'image/png',
+    'jpg': 'image/jpeg',
+    }
 
 template = bs4.BeautifulSoup(open('template.fb2', 'rb'), 'xml')
 body = template.select('body')[0]
@@ -107,14 +134,13 @@ idx = first.select('.alt2')[0]
 posts = [link_postid(link)
          for link in idx.select('a[href]')
          if link_postid(link)]
-while not is_img(first.contents[0]):
-  first.contents[0].extract()
-pars = list(post_ps(doc, first))
-title = wrap(template, 'title', ['HandS.(R)'])
-body.append(wrap(template, 'section', [title] + pars))
 
-for p, t in (p for p in posts if p[0] != START):
+for i, (p, t) in enumerate(posts):
   doc, post = get_post(p)
+  if i == 0:
+    while not is_img(post.contents[0]):
+      post.contents[0].extract()
+
   expanding = post.select('div.alt2 div')
   if len(expanding):
     post = expanding[0]
@@ -127,5 +153,21 @@ br.replace_text(body, r'^-- ', '— ')
 br.replace_text(body, r'\x85', '…')
 br.replace_text(body, r'\x97', '—')
 br.fb2_tags(body)
+
+for img in body.select('img'):
+  src = img.attrs.get('src', None)
+  if src in IMG_MAP:
+    src = IMG_MAP[src]
+    img.name = 'image'
+    img.attrs['l:href'] = '#' + src
+    del img.attrs['src']
+
+    blob = template.new_tag('binary')
+    blob.attrs['id'] = src
+    blob.attrs['content-type'] = IMG_TYPE[src[-3:]]
+    with open('img/' + src, 'rb') as f:
+      blob.append(base64.b64encode(f.read()).decode())
+    template.append(blob)
+
 with open('ddd.fb2', 'w', encoding='utf-8') as out:
   out.write(str(template))
