@@ -1,6 +1,7 @@
 import hashlib
 import debrify as br
 import bs4
+import re
 import requests
 import base64
 
@@ -135,15 +136,21 @@ posts = [link_postid(link)
          for link in idx.select('a[href]')
          if link_postid(link)]
 
+def get_expanding(post):
+  for d in post.select('div[style^="margin:20px;"]'):
+    head = d.select('div.smallfont')[0]
+    if re.search(r'TL.? note', str(head), re.I):
+      continue
+    return d.select('div.alt2 div')[0]
+  return None
+
 for i, (p, t) in enumerate(posts):
   doc, post = get_post(p)
   if i == 0:
     while not is_img(post.contents[0]):
       post.contents[0].extract()
 
-  expanding = post.select('div.alt2 div')
-  if len(expanding):
-    post = expanding[0]
+  post = get_expanding(post) or post
   pars = list(post_ps(doc, post))
   title = wrap(template, 'title', [t])
   body.append(wrap(template, 'section', [title, '\n'] + pars))
