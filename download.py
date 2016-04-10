@@ -167,7 +167,7 @@ for img in body.select('img'):
     blob.attrs['content-type'] = IMG_TYPE[src[-3:]]
     with open('img/' + src, 'rb') as f:
       blob.append(base64.b64encode(f.read()).decode())
-    template.append(blob)
+    template.contents[0].append(blob)
 
 with open('ddd.fb2', 'w', encoding='utf-8') as out:
   out.write(str(template))
