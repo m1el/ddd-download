@@ -167,8 +167,10 @@ for p, t in posts:
 
   post = get_expanding(post) or post
   pars = list(post_ps(doc, post))
-  title = wrap(template, 'title', [t])
-  body.append(wrap(template, 'section', [title, '\n'] + pars))
+  if t:
+    title = wrap(template, 'title', [t])
+    pars = [title, '\n'] + pars
+  body.append(wrap(template, 'section', pars))
   body.append('\n')
 
 br.replace_text(body, r'^-- ', '— ')
@@ -176,9 +178,17 @@ br.replace_text(body, r'\x85', '…')
 br.replace_text(body, r'\x97', '—')
 br.fb2_tags(body)
 
+for p in body.select('p'):
+  if len(p.contents) != 1:
+    continue
+  t = p.contents[0]
+  if type(t) == br.Text:
+    if len(t) == 1 or re.match('^(?:[*.]){1-3}$', t):
+      p.name = 'subtitle'
+
+root = template.contents[0]
 for img in body.select('img'):
   src = img.attrs.get('src', None)
-  root = template.contents[0]
   if src in IMG_MAP:
     src = IMG_MAP[src]
     img.name = 'image'
