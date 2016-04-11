@@ -87,16 +87,19 @@ def post_ps(doc, post):
       if style == 'text-align: center;':
         name = 'subtitle'
       elif style == 'text-align: right;':
-        name = 'cite'
+        name = 'epighraph'
       else:
-        name = 'section'
+        name = None
       if len(g.contents) > 1:
         els = map(strip, br.paragrify(doc, g))
         els = drop_empty(els)
         els = br.intersperse(els, '\n')
       else:
         els = [g.contents[0]]
-      yield wrap(doc, name, list(els))
+      if name:
+        yield wrap(doc, name, list(els))
+      else:
+        yield from els
     else:
       els = map(strip, br.paragrify(doc, wrap(doc, post.name, g)))
       els = drop_empty(els)
@@ -148,6 +151,17 @@ IMG_TYPE = {
 
 template = bs4.BeautifulSoup(open('template.fb2', 'rb'), 'xml')
 body = template.select('body')[0]
+root = template.contents[0]
+
+JtheE = bs4.BeautifulSoup(open('JtheE.fb2', 'rb'), 'xml')
+jtebody = JtheE.select('body')[0]
+jtenotes = JtheE.select('body[name="notes"]')[0]
+
+for section in list(jtebody.contents):
+  body.append(section)
+
+root.append(jtenotes)
+root.append('\n')
 
 doc, first = get_post(START)
 idx = first.select('.alt2')[0]
@@ -168,6 +182,8 @@ for p, t in posts:
   if p == START:
     while not is_img(post.contents[0]):
       post.contents[0].extract()
+  if p == '2317127':
+    t = None
 
   post = get_expanding(post) or post
   pars = list(post_ps(doc, post))
@@ -197,14 +213,14 @@ for p in body.select('p'):
     if len(t) == 1 or re.match('^(?:[*.]){1-3}$', t):
       p.name = 'subtitle'
 
-root = template.contents[0]
 for img in body.select('img'):
   src = img.attrs.get('src', None)
   if src in IMG_MAP:
     src = IMG_MAP[src]
-    img.name = 'image'
-    img.attrs['l:href'] = '#' + src
-    del img.attrs['src']
+    imgr = template.new_tag('image')
+    imgr.attrs['l:href'] = '#' + src
+    imgr.can_be_empty_element = True
+    img.replace_with(imgr)
 
     blob = template.new_tag('binary')
     blob.attrs['id'] = src
