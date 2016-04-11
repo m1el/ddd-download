@@ -136,6 +136,10 @@ IMG_MAP = {
     'http://i.imgur.com/rHdDqSh.png': 'ishizue_kanata.jpg',
     'http://i.imgur.com/qFuMOgW.png': 'qFuMOgW.png',
     'http://forums.nrvnqsr.com/attachment.php?attachmentid=11346&d=1446157668&thumb=1': 'DDD0007_s.png',
+    'JtheE-1_1.jpg': 'JtheE-1_1.jpg',
+    'JtheE-2_1.jpg': 'JtheE-2_1.jpg',
+    'JtheE-41_1.jpg': 'JtheE-41_1.jpg',
+    'JtheE-88_1.jpg': 'JtheE-88_1.jpg',
     }
 IMG_TYPE = {
     'png': 'image/png',
