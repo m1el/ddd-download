@@ -198,6 +198,8 @@ def fix_text(el):
     return
   text = str(el)
   text = re.sub(r'^-- ', '— ', text)
+  # text = re.sub(r'\x84', '■', text)
+  # text = re.sub(r'\x91', '◊', text)
   text = re.sub(r'\x85', '…', text)
   text = re.sub(r'\x97', '—', text)
   el.replace_with(text)
