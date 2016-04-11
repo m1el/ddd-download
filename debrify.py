@@ -34,7 +34,8 @@ def lift_br(doc, element):
     return [None]
 
   def wrap(ary):
-    ret = doc.new_tag(element.name, **element.attrs)
+    ret = doc.new_tag(element.name)
+    ret.attrs.update(element.attrs)
     for el in ary:
       ret.append(el)
     return ret
